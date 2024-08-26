@@ -3,7 +3,7 @@
 class User {
     private $id;
     public $login;
-    public $password; // Assuming you'll handle password hashing
+    public $password; // Handle password hashing
     public $email;
     public $firstname;
     public $lastname;
@@ -12,7 +12,7 @@ class User {
     public function __construct($login, $password, $email, $firstname, $lastname, $id = null) {
         $this->id = $id;
         $this->login = $login;
-        $this->password = password_hash($password, PASSWORD_BCRYPT); 
+        $this->password = $password ? password_hash($password, PASSWORD_BCRYPT) : null; // Hash the password
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
@@ -23,11 +23,7 @@ class User {
         $sql = "INSERT INTO utilisateur (login, password, email, firstname, lastname) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssss", $this->login, $this->password, $this->email, $this->firstname, $this->lastname);
-        if ($stmt->execute()) {
-            $this->id = $conn->insert_id; // Get the generated ID
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     // Read user details by ID (R in CRUD)
@@ -59,3 +55,4 @@ class User {
         return $this->id;
     }
 }
+?>
